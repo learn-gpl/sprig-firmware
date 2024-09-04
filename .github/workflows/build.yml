@@ -17,7 +17,7 @@ jobs:
       - name: 'Clone Spade repo'
         run: |
           cd ~/
-          git clone https://github.com/hackclub/sprig.git sprig/
+          git clone https://github.com/learn-gpl/sprig-firmware.git sprig/
           
       - name: 'Build Script'
         run: cd ~/sprig/firmware/spade && ../../scripts/gardenshed/build.sh
