@@ -108,6 +108,58 @@ static void button_history_write(ButtonState *bs, int i, bool value) {
     bs->history[i/8] &= ~(1 << (i % 8));
 }
 
+
+// Turn on the power lights and dim them with PWM.
+static void power_lights() {
+  // left white light
+  const int pin_num_0 = 28;
+  gpio_set_function(pin_num_0, GPIO_FUNC_PWM);
+  uint slice_num_0 = pwm_gpio_to_slice_num(pin_num_0);
+  pwm_set_enabled(slice_num_0, true);
+
+	const int led_color = 333399;
+
+  pwm_set_gpio_level(pin_num_0, led_color);
+
+  // right blue light
+   const pin_num_1 = 4;
+   gpio_set_function(pin_num_1, GPIO_FUNC_PWM);
+   uint slice_num_1 = pwm_gpio_to_slice_num(pin_num_1);
+   pwm_set_enabled(slice_num_1, true);
+   pwm_set_gpio_level(pin_num_1, led_color);
+}
+
+static void power_lights_off() {
+  //power off left white light
+  const int pin_num_0 = 28;
+  uint slice_num_0 = pwm_gpio_to_slice_num(pin_num_0);
+  //pwm_set_enabled(slice_num_0, true);
+  pwm_set_gpio_level(pin_num_0, 0);
+
+  //power off right blue light
+   const pin_num_1 = 4;
+   uint slice_num_1 = pwm_gpio_to_slice_num(pin_num_1);
+   //pwm_set_enabled(slice_num_1, true);
+   pwm_set_gpio_level(pin_num_1, 0);
+}
+
+static void power_lights_left() {
+	 //power on left white light
+  const int pin_num_0 = 28;
+  uint slice_num_0 = pwm_gpio_to_slice_num(pin_num_0);
+  pwm_set_enabled(slice_num_0, true);
+  pwm_set_gpio_level(pin_num_0, 333399);
+}
+
+static void power_lights_right() {
+	//power off right blue light
+   const pin_num_1 = 4;
+   uint slice_num_1 = pwm_gpio_to_slice_num(pin_num_1);
+   //pwm_set_enabled(slice_num_1, true);
+   pwm_set_gpio_level(pin_num_1, 333399);
+}
+
+
 static void button_init(void) {
   for (int i = 0; i < ARR_LEN(button_pins); i++) {
     ButtonState *bs = button_states + i;
@@ -162,56 +214,6 @@ static void button_poll(void) {
       }
     }
   }
-}
-
-// Turn on the power lights and dim them with PWM.
-static void power_lights() {
-  // left white light
-  const int pin_num_0 = 28;
-  gpio_set_function(pin_num_0, GPIO_FUNC_PWM);
-  uint slice_num_0 = pwm_gpio_to_slice_num(pin_num_0);
-  pwm_set_enabled(slice_num_0, true);
-
-	const int led_color = 333399;
-
-  pwm_set_gpio_level(pin_num_0, led_color);
-
-  // right blue light
-   const pin_num_1 = 4;
-   gpio_set_function(pin_num_1, GPIO_FUNC_PWM);
-   uint slice_num_1 = pwm_gpio_to_slice_num(pin_num_1);
-   pwm_set_enabled(slice_num_1, true);
-   pwm_set_gpio_level(pin_num_1, led_color);
-}
-
-static void power_lights_off() {
-  //power off left white light
-  const int pin_num_0 = 28;
-  uint slice_num_0 = pwm_gpio_to_slice_num(pin_num_0);
-  //pwm_set_enabled(slice_num_0, true);
-  pwm_set_gpio_level(pin_num_0, 0);
-
-  //power off right blue light
-   const pin_num_1 = 4;
-   uint slice_num_1 = pwm_gpio_to_slice_num(pin_num_1);
-   //pwm_set_enabled(slice_num_1, true);
-   pwm_set_gpio_level(pin_num_1, 0);
-}
-
-static void power_lights_left() {
-	 //power on left white light
-  const int pin_num_0 = 28;
-  uint slice_num_0 = pwm_gpio_to_slice_num(pin_num_0);
-  pwm_set_enabled(slice_num_0, true);
-  pwm_set_gpio_level(pin_num_0, 333399);
-}
-
-static void power_lights_right() {
-	//power off right blue light
-   const pin_num_1 = 4;
-   uint slice_num_1 = pwm_gpio_to_slice_num(pin_num_1);
-   //pwm_set_enabled(slice_num_1, true);
-   pwm_set_gpio_level(pin_num_1, 333399);
 }
 
 // Entry point for the second core that polls the buttons.
