@@ -150,19 +150,12 @@ static void power_lights() {
   pwm_set_enabled(slice_num_0, true);
   pwm_set_gpio_level(pin_num_0, 65535/8);
 
-  // light on raspberry pi pico
-  const int led_pin_num = 25;
-  gpio_set_function(led_pin_num, GPIO_FUNC_PWM);
-  uint led_slice_num = pwm_gpio_to_slice_num(led_pin_num);
-  pwm_set_enabled(led_slice_num, true);
-  pwm_set_gpio_level(led_pin_num, 65535 / 8);
-
   // right blue light
-  // const pin_num_1 = 4;
-  // gpio_set_function(pin_num_1, GPIO_FUNC_PWM);
-  // uint slice_num_1 = pwm_gpio_to_slice_num(pin_num_1);
-  // pwm_set_enabled(slice_num_1, true);
-  // pwm_set_gpio_level(pin_num_1, 65535/4);
+   const pin_num_1 = 4;
+   gpio_set_function(pin_num_1, GPIO_FUNC_PWM);
+   uint slice_num_1 = pwm_gpio_to_slice_num(pin_num_1);
+   pwm_set_enabled(slice_num_1, true);
+   pwm_set_gpio_level(pin_num_1, 65535/4);
 }
 
 // Entry point for the second core that polls the buttons.
@@ -403,12 +396,18 @@ void render_game_menu_screen(char *buffer, Welcome_State welcome_state) {
         memcpy(write_dest, game_line, write_length);
     }
 
+	adc_set_temp_sensor_enabled(true);
+	adc_select_input(4);
+  	sleep_ms(1);
+  	int temp = adc_read();
+	adc_set_temp_sensor_enabled(false);
+
 
     sprintf(buffer,
             "                    \n"
             "                    \n"
             "%s"
-            "                    \n"
+            " Temp: %d           \n"
             " Game: %d/%d%s\n"
             " Size: %lu/%d%s\n"
             "                    \n"
@@ -416,6 +415,7 @@ void render_game_menu_screen(char *buffer, Welcome_State welcome_state) {
             " S: DELETE          \n"
             " <-  A , D  ->      \n",
             game_split_lines,
+			temp,
             welcome_state.games_i + 1, welcome_state.games_len, game_padding,
             GAME_SLOTS(welcome_state.games[welcome_state.games_i].size_b), MAX_SLOTS, size_padding);
 }
