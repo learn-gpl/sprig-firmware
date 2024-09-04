@@ -43,6 +43,18 @@
 
 //Hook: retrooper
 //Short declaration of functions
+typedef enum {
+    Button_W,
+    Button_S,
+    Button_A,
+    Button_D,
+    Button_I,
+    Button_K,
+    Button_J,
+    Button_L,
+    Button_None
+} Button;
+
 static Button get_button_press();
 
 // screen is 20 characters wide
@@ -83,18 +95,6 @@ typedef struct {
 // W, S, A, D, I, K, J, L
 uint button_pins[] = {  5,  7,  6,  8, 12, 14, 13, 15 };
 static ButtonState button_states[ARR_LEN(button_pins)] = {0};
-
-typedef enum {
-    Button_W,
-    Button_S,
-    Button_A,
-    Button_D,
-    Button_I,
-    Button_K,
-    Button_J,
-    Button_L,
-    Button_None
-} Button;
 
 static bool button_history_read(ButtonState *bs, int i) {
   // We want to store bools compactly so we have to do some bit twiddling.
