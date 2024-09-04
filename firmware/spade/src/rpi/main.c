@@ -161,12 +161,54 @@ static void power_lights() {
    pwm_set_gpio_level(pin_num_1, led_color);
 }
 
+static void power_lights_off() {
+  //power off left white light
+  const int pin_num_0 = 28;
+  uint slice_num_0 = pwm_gpio_to_slice_num(pin_num_0);
+  //pwm_set_enabled(slice_num_0, true);
+  pwm_set_gpio_level(pin_num_0, 0);
+
+  //power off right blue light
+   const pin_num_1 = 4;
+   uint slice_num_1 = pwm_gpio_to_slice_num(pin_num_1);
+   //pwm_set_enabled(slice_num_1, true);
+   pwm_set_gpio_level(pin_num_1, 0);
+}
+
+static void power_lights_left() {
+	 //power on left white light
+  const int pin_num_0 = 28;
+  uint slice_num_0 = pwm_gpio_to_slice_num(pin_num_0);
+  pwm_set_enabled(slice_num_0, true);
+  pwm_set_gpio_level(pin_num_0, 333399);
+}
+
+static void power_lights_right() {
+	//power off right blue light
+   const pin_num_1 = 4;
+   uint slice_num_1 = pwm_gpio_to_slice_num(pin_num_1);
+   //pwm_set_enabled(slice_num_1, true);
+   pwm_set_gpio_level(pin_num_1, 333399);
+}
+
 // Entry point for the second core that polls the buttons.
 static void core1_entry(void) {
   button_init();
 
   while (1) {
     button_poll();
+
+	//Hook: retrooper
+	Button button = get_button_press();
+	if (button == Button_A || button == Button_J) {
+		power_lights_left();
+	}
+	else if (button == Button_D || button == Button_L) {
+		power_lights_right();
+	}
+	else {
+		power_lights_off();
+	}
   }
 }
 
