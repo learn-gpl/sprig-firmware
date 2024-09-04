@@ -195,17 +195,20 @@ static void button_poll(void) {
 
 		//Hook: retrooper
 		switch (button_pins[i]) {
-          case 6:
-		  case 13: {
+			case 5: 
+          case 7:
+		  case 6:
+		  case 8: {
 			power_lights_off();
 			power_lights_left();
               break;
 		  }
-          case 8:
-		  case 15:{ 
+          case 12:
+		  case 14: 
+		  case 13: 
+		  case 15: { 
 				power_lights_off();
 				power_lights_right();
-              
 			  break;
 		  }
         default:
