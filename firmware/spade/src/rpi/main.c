@@ -325,7 +325,7 @@ typedef struct {
                                       " this game?         \n"
                                       "                    \n"
                                       "                    \n"
-                                      " W: confirm         \n"
+                                      " ANOTHER DEBUG W: confirm         \n"
                                       " S: exit            \n"
                                       "                    \n"
                                       "                    \n"
