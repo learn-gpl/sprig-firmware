@@ -41,6 +41,10 @@
 #include "shared/js_runtime/jerryxx.c"
 #include "shared/js_runtime/js.h"
 
+//Hook: retrooper
+//Short declaration of functions
+static Button get_button_press();
+
 // screen is 20 characters wide
 #define SCREEN_WIDTH_CHARS 20
 #define SCREEN_HEIGHT_LINES 10
