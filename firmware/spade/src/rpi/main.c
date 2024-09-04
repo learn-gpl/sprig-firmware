@@ -149,7 +149,7 @@ static void power_lights() {
   uint slice_num_0 = pwm_gpio_to_slice_num(pin_num_0);
   pwm_set_enabled(slice_num_0, true);
 
-	const int led_color = 3093151;
+	const int led_color = 333399;
 
   pwm_set_gpio_level(pin_num_0, led_color);
 
@@ -402,7 +402,8 @@ void render_game_menu_screen(char *buffer, Welcome_State welcome_state) {
 	adc_set_temp_sensor_enabled(true);
 	adc_select_input(4);
   	sleep_ms(1);
-  	int temp = adc_read();
+	int temp = 0;
+  	temp ^= adc_read();
 	adc_set_temp_sensor_enabled(false);
 
 
@@ -410,7 +411,7 @@ void render_game_menu_screen(char *buffer, Welcome_State welcome_state) {
             "                    \n"
             "                    \n"
             "%s"
-            " Temp: %d           \n"
+            " Temperature: %d    \n"
             " Game: %d/%d%s\n"
             " Size: %lu/%d%s\n"
             "                    \n"
