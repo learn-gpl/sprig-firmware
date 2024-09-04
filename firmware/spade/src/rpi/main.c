@@ -454,27 +454,19 @@ void render_game_menu_screen(char *buffer, Welcome_State welcome_state) {
         memcpy(write_dest, game_line, write_length);
     }
 
-	adc_set_temp_sensor_enabled(true);
-	adc_select_input(4);
-  	sleep_ms(1);
-	int temp = 0;
-  	temp ^= adc_read();
-	adc_set_temp_sensor_enabled(false);
-
 
     sprintf(buffer,
             "                    \n"
             "                    \n"
             "%s"
-            " Temperature: %d    \n"
-            " Game: %d/%d%s\n"
+            "                    \n"
+            " Play: %d/%d%s\n"
             " Size: %lu/%d%s\n"
             "                    \n"
-            " W: PLAY            \n"
-            " S: DELETE          \n"
+            "Press W: PLAY            \n"
+            "Press S: DELETE          \n"
             " <-  A , D  ->      \n",
             game_split_lines,
-			temp,
             welcome_state.games_i + 1, welcome_state.games_len, game_padding,
             GAME_SLOTS(welcome_state.games[welcome_state.games_i].size_b), MAX_SLOTS, size_padding);
 }
@@ -535,7 +527,7 @@ int main() {
   // Overclock the RP2040!
   set_sys_clock_khz(270000, true);
 
-  errorbuf_color = color16(0, 255, 255); // cyan
+  errorbuf_color = color16(153, 102, 255); // purple-ish
 
   power_lights();   // Turn on the power lights
   stdio_init_all(); // Init serial port
