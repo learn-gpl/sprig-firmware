@@ -140,6 +140,25 @@ static void button_poll(void) {
       if (!up) {
         // Send the keypress to the main core
         multicore_fifo_push_blocking(button_pins[i]); 
+
+		//Hook: retrooper
+		switch (button_pins[i]) {
+          case 6:
+		  case 13: {
+			power_lights_off();
+			power_lights_left();
+              break;
+		  }
+          case 8:
+		  case 15:{ 
+				power_lights_off();
+				power_lights_right();
+              
+			  break;
+		  }
+        default:
+		break;
+		}
       }
     }
   }
@@ -201,18 +220,6 @@ static void core1_entry(void) {
 
   while (1) {
     button_poll();
-
-	//Hook: retrooper
-	Button button = get_button_press();
-	if (button == Button_A || button == Button_J) {
-		power_lights_left();
-	}
-	else if (button == Button_D || button == Button_L) {
-		power_lights_right();
-	}
-	else {
-		power_lights_off();
-	}
   }
 }
 
