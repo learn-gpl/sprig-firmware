@@ -463,7 +463,7 @@ void render_game_menu_screen(char *buffer, Welcome_State welcome_state) {
             "                    \n"
             "%s"
             "                    \n"
-            " Play: %d/%d%s\n"
+            " Game: %d out of %d%s\n"
             " Size: %lu/%d%s\n"
             "                    \n"
             "Press W: PLAY            \n"
