@@ -386,8 +386,8 @@ typedef struct {
                                       " this game?         \n"
                                       "                    \n"
                                       "                    \n"
-                                      " ANOTHER DEBUG W: confirm         \n"
-                                      " S: exit            \n"
+                                      " Press W: confirm   \n"
+                                      " Press S: exit      \n"
                                       "                    \n"
                                       "                    \n"
                                       " sprig.hackclub.com \n";
