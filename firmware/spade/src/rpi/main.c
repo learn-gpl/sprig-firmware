@@ -466,8 +466,8 @@ void render_game_menu_screen(char *buffer, Welcome_State welcome_state) {
             " Game: %d out of %d%s\n"
             " Size: %lu/%d%s\n"
             "                    \n"
-            "Press W: PLAY            \n"
-            "Press S: DELETE          \n"
+            "Press W: PLAY     \n"
+            "Press S: DELETE   \n"
             " <-  A , D  ->      \n",
             game_split_lines,
             welcome_state.games_i + 1, welcome_state.games_len, game_padding,
