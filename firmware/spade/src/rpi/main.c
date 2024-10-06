@@ -187,7 +187,8 @@ static void button_poll(void) {
     }
     up = up > ((HISTORY_LEN*5)/6); // Here we convert to a bool
 
-    if (up != bs->last_state) {
+	// Update: retrooper, no need to spam key-presses, as they remain held.
+    //if (up != bs->last_state) {
       bs->last_state = up;
       if (!up) {
         // Send the keypress to the main core
@@ -215,7 +216,7 @@ static void button_poll(void) {
 		break;
 		}
       }
-    }
+    //}
   }
 }
 
