@@ -385,23 +385,24 @@ static uint32_t sprite_generation(Sprite *s) {
 
 /* removes the canonical reference to this sprite from the spatial grid.
  * it is your responsibility to subsequently free the sprite. */
-static void sprite_pluck_from_map(Sprite *s) {
-  Sprite *top = get_sprite(state->map[s->x + s->y * state->width]);
-  // assert(top != 0);
+ static void sprite_pluck_from_map(Sprite *s) {
+    int index = (int)(s->x + s->y * state->width);
+    Sprite *top = get_sprite(state->map[index]);
+    // assert(top != 0);
 
-  if (top == s) {
-    state->map[s->x + s->y * state->width] = s->next;
-    return;
-  }
-
-  for (Sprite *t = top; t->next; t = get_sprite(t->next)) {
-    if (get_sprite(t->next) == s) {
-      t->next = s->next;
-      return;
+    if (top == s) {
+        state->map[index] = s->next;
+        return;
     }
-  }
 
-  state->map[s->x + s->y * state->width] = 0;
+    for (Sprite *t = top; t->next; t = get_sprite(t->next)) {
+        if (get_sprite(t->next) == s) {
+            t->next = s->next;
+            return;
+        }
+    }
+
+    state->map[index] = 0;
 }
 
 /**
@@ -412,25 +413,23 @@ static void sprite_pluck_from_map(Sprite *s) {
  * see sprite_pluck_from_map about caller's responsibility
  */
 static void sprite_plop_into_map(Sprite *sprite) {
-  Sprite *top = get_sprite(state->map[sprite->x + sprite->y * state->width]);
+    int index = (int)(sprite->x + sprite->y * state->width);
+    Sprite *top = get_sprite(state->map[index]);
 
-  // we want the sprite with the lowest z-order on the top.
+    #define Z_ORDER(sprite) (state->char_to_index[(int)(sprite)->kind])
+    if (top == 0 || Z_ORDER(top) >= Z_ORDER(sprite)) {
+        sprite->next = state->map[index];
+        state->map[index] = sprite - state->sprite_pool + 1;
+        return;
+    }
 
-  #define Z_ORDER(sprite) (state->char_to_index[(int)(sprite)->kind])
-  if (top == 0 || Z_ORDER(top) >= Z_ORDER(sprite)) {
-    sprite->next = state->map[sprite->x + sprite->y * state->width];
-    state->map[sprite->x + sprite->y * state->width] = sprite - state->sprite_pool + 1;
-    // dbg("top's me, early ret");
-    return;
-  }
+    Sprite *insert_after = top;
+    while (insert_after->next && Z_ORDER(get_sprite(insert_after->next)) < Z_ORDER(sprite))
+        insert_after = get_sprite(insert_after->next);
+    #undef Z_ORDER
 
-  Sprite *insert_after = top;
-  while (insert_after->next && Z_ORDER(get_sprite(insert_after->next)) < Z_ORDER(sprite))
-    insert_after = get_sprite(insert_after->next);
-  #undef Z_ORDER
-
-  sprite->next = insert_after->next;
-  insert_after->next = sprite - state->sprite_pool + 1;
+    sprite->next = insert_after->next;
+    insert_after->next = sprite - state->sprite_pool + 1;
 }
 
 static Sprite *map_add(int x, int y, char kind) {
@@ -625,54 +624,54 @@ static void map_drill(int x, int y) {
 
 /* move a sprite by one unit along the specified axis
  * returns how much it was moved on that axis (may be 0 if path obstructed) */
-static int _map_move(Sprite *s, float big_dx, float big_dy) {
-  float dx = sign(big_dx);
-  float dy = sign(big_dy);
+static float _map_move(Sprite *s, float big_dx, float big_dy) {
+    float dx = sign(big_dx);
+    float dy = sign(big_dy);
 
-  // expected input: x and y aren't both 0, either x or y is non-zero (not both)
-  if (dx == 0 && dy == 0) return 0;
+    // expected input: x and y aren't both 0, either x or y is non-zero (not both)
+    if (dx == 0 && dy == 0) return 0;
 
-  int prog = 0;
-  int goal = (abs(big_dx) > abs(big_dy)) ? big_dx : big_dy;
+    float prog = 0;
+    float goal = (abs(big_dx) > abs(big_dy)) ? big_dx : big_dy;
 
-  while (prog != goal) {
-    int x = s->x+dx;
-    int y = s->y+dy;
+    while (prog != goal) {
+        float x = (int)(s->x + dx);
+        float y = (int)(s->y + dy);
 
-    // no moving off of the map!
-    if (x < 0) return prog;
-    if (y < 0) return prog;
-    if (x >= state->width) return prog;
-    if (y >= state->height) return prog;
+        // no moving off of the map!
+        if (x < 0) return prog;
+        if (y < 0) return prog;
+        if (x >= state->width) return prog;
+        if (y >= state->height) return prog;
 
-    if (state->solid[(int)s->kind]) {
-      // no moving into a solid!
-      Sprite *n = get_sprite(state->map[x + y * state->width]);
+        if (state->solid[(int)s->kind]) {
+            // no moving into a solid!
+            Sprite *n = get_sprite(state->map[x + y * state->width]);
 
-      for (; n; n = get_sprite(n->next))
-        if (state->solid[(int)n->kind]) {
-          // unless you can push them out of the way ig
-          if (push_table_read(s->kind, n->kind)) {
-            if (_map_move(n, dx, dy) == 0)
-              return prog;
-          }
-          else
-            return prog;
+            for (; n; n = get_sprite(n->next))
+                if (state->solid[(int)n->kind]) {
+                    // unless you can push them out of the way ig
+                    if (push_table_read(s->kind, n->kind)) {
+                        if (_map_move(n, dx, dy) == 0)
+                            return prog;
+                    }
+                    else
+                        return prog;
+                }
         }
+
+        sprite_pluck_from_map(s);
+        s->x += dx;
+        s->y += dy;
+        sprite_plop_into_map(s);
+        prog += (abs(dx) > abs(dy)) ? dx : dy;
     }
 
-    sprite_pluck_from_map(s);
-    s->x += dx;
-    s->y += dy;
-    sprite_plop_into_map(s);
-    prog += (abs(dx) > abs(dy)) ? dx : dy;
-  }
-
-  return prog;
+    return prog;
 }
 
-static void map_move(Sprite *s, int big_dx, int big_dy) {
-  int moved = _map_move(s, big_dx, big_dy);
+static void map_move(Sprite *s, float big_dx, ifloatnt big_dy) {
+  float moved = _map_move(s, big_dx, big_dy);
   if (big_dx != 0) s->dx = moved;
   else             s->dy = moved;
 }
