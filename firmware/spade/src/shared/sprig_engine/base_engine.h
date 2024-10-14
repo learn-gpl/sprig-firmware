@@ -43,8 +43,8 @@ typedef struct {
 typedef struct Sprite Sprite;
 struct Sprite {
   char kind;
-  int8_t  dx, dy;
-  uint16_t x,  y;
+  float  dx, dy;
+  float x,  y;
   uint16_t next; // index of next sprite in list + 1 (0 null)
   jerry_value_t object;
 };

@@ -9,7 +9,7 @@
 static State *state = NULL;
 
 // Get the sign of an integer. Returns -1 if negative, 1 if positive, 0 if 0.
-static int sign(int i) {
+static float sign(float i) {
   return (i > 0) - (i < 0);
 }
 
@@ -625,9 +625,9 @@ static void map_drill(int x, int y) {
 
 /* move a sprite by one unit along the specified axis
  * returns how much it was moved on that axis (may be 0 if path obstructed) */
-static int _map_move(Sprite *s, int big_dx, int big_dy) {
-  int dx = sign(big_dx);
-  int dy = sign(big_dy);
+static int _map_move(Sprite *s, float big_dx, float big_dy) {
+  float dx = sign(big_dx);
+  float dy = sign(big_dy);
 
   // expected input: x and y aren't both 0, either x or y is non-zero (not both)
   if (dx == 0 && dy == 0) return 0;
